@@ -1,0 +1,13 @@
+# Ignore all log files
+*.tf
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+*.tfplan
+crash.log
+*.override.tf
+
+# Optional: Ignore the lock file if not managing provider versions strictly
+.terraform.lock.hcl
+
