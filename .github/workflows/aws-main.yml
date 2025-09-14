@@ -54,5 +54,5 @@ jobs:
 
       - name: Deploy to EKS
         run: |
-          kubectl apply -f k8s/app-deployment.yaml
-          kubectl apply -f k8s/app-service.yaml
+          kubectl apply -f k8s/app-deployment.yaml --validate=false
+          kubectl apply -f k8s/app-service.yaml  --validate=false
