@@ -48,8 +48,8 @@ jobs:
         run: |
           sed -i "s|image:.*|image: $IMAGE_URI|g" k8s/app-deployment.yaml
      
-      #- name: Update kubeconfig
-      # run: aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev
 
       - name: Deploy to EKS
         run: |
