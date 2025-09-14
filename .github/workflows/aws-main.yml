@@ -47,12 +47,7 @@ jobs:
       - name: Update Kubernetes manifests
         run: |
           sed -i "s|image:.*|image: $IMAGE_URI|g" k8s/app-deployment.yaml
-      - name: Setup kubeconfig
-        run: |
-      
-          aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev
-          kubectl apply -f k8s/app-deployment.yaml --validate=false
-
+     
       #- name: Update kubeconfig
       # run: aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev
 
