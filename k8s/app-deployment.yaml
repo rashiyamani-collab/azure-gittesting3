@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app2
+  namespace: default
+  labels:
+    app: demo-app2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: demo-app2
+  template:
+    metadata:
+      labels:
+        app: demo-app2
+    spec:
+      containers:
+      - name: demo-app2
+        image: 074002960123.dkr.ecr.ap-south-1.amazonaws.com/myapp:latest   # e.g., 123456789012.dkr.ecr.ap-south-1.amazonaws.com/demo-app:latest
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
