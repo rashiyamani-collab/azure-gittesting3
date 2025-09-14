@@ -49,9 +49,10 @@ jobs:
           sed -i "s|image:.*|image: $IMAGE_URI|g" k8s/app-deployment.yaml
      
       - name: Update kubeconfig
-        run: aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev
-
+        run: | 
+          aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev
+          kubectl create namespace demo-app2 --dry-run=client -o yaml | kubectl apply -f -
       - name: Deploy to EKS
         run: |
-          kubectl apply -f k8s/app-deployment.yaml --validate=false
-          kubectl apply -f k8s/app-service.yaml  --validate=false
+          kubectl apply -f k8s/app-deployment.yaml --validate=false --namespace demo-app2
+          kubectl apply -f k8s/app-service.yaml  --validate=false   --namespace demo-app2
