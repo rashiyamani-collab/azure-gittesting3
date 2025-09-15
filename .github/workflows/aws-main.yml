@@ -32,7 +32,6 @@ jobs:
 
       - name: Update kubeconfig
         run: |
-             aws eks update-kubeconfig
              aws eks update-kubeconfig --name demo-eks-dev --region ap-south-1
              kubectl get pods
 
