@@ -1,16 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: demo-app2
-  namespace: default
-  labels:
-    app: demo-app2
+  name: nginx-loadbalancer-servicetest3
 spec:
-  type: LoadBalancer   # creates an AWS ELB in public subnets
   selector:
-    app: demo-app2
+    app: nginxtest3 # Matches the labels of the NGINX pods
   ports:
-    - name: http
-      port: 80
-      targetPort: 80
-
+    - protocol: TCP
+      port: 80 # The port the Service will listen on
+      targetPort: 80 # The port on the Pods to forward traffic to
+  type: LoadBalancer
