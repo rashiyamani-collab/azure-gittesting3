@@ -1,73 +1,38 @@
-name: Build  and Deploy to EKS
+name: Deploy to EKS
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, dev, staging ]
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-
-    env:
-      AWS_REGION: ap-south-1
-      ECR_REPO: 074002960123.dkr.ecr.ap-south-1.amazonaws.com/myapp
-      CLUSTER_NAME: demo-eks-dev
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC)
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::074002960123:role/github-oidc-rashiyamani-collab-azure-gittesting3
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: arn:aws:iam::074002960123:role/github-oidc-rashiyamani-collab
+          aws-region: ap-south-1
 
-      - name: Log in to Amazon ECR
-        id: ecr-login
+      - name: Login to Amazon ECR
+        run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 074002960123.dkr.ecr.ap-south-1.amazonaws.com
+
+      - name: Build and Push Docker Image
         run: |
-          aws ecr get-login-password --region $AWS_REGION \
-          | docker login --username AWS --password-stdin $ECR_REPO
+          IMAGE_TAG=${GITHUB_SHA}
+          docker build -t 074002960123.dkr.ecr.ap-south-1.amazonaws.com/myapp:$IMAGE_TAG .
+          docker push 074002960123.dkr.ecr.ap-south-1.amazonaws.com/myapp:$IMAGE_TAG
 
-      - name: Build and Push Docker image
-        run: |
-          IMAGE_TAG=${{ github.sha }}
-          IMAGE_URI=${{ steps.login-ecr.outputs.registry }}${{ env.ECR_REPO }}:$IMAGE_TAG
-          echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
-
-          docker build -t $IMAGE_URI .
-          docker push $IMAGE_URI
-
-
-      # Update deployment.yaml with new image
-      - name: Update Kubernetes manifests
-        run: |
-          sed -i "s|image:.*|image: $IMAGE_URI|g" k8s/app-deployment.yaml
-
-     # Update deployment.yaml with new image
-      - name: Update Kubernetes manifests
-        run: |
-          sed -i "s|image:.*|image: $IMAGE_URI|g" k8s/app-deployment.yaml
-          
       - name: Update kubeconfig
-        run: |
-          aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev --debug
-
-      - name: Test AWS Identity
-        run: aws sts get-caller-identity
-
-      - name: Update Kubeconfig
-        run: aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev
-
-      - name: Test Kubernetes Access
-        run: kubectl get namespaces
+        run: aws eks update-kubeconfig --name demo-eks-dev --region ap-south-1
 
       - name: Deploy to EKS
-        run: |
-          kubectl apply -f k8s/app-deployment.yaml
-          kubectl apply -f k8s/app-service.yaml
-    
+        run: kubectl apply -f k8s/app-deployment.yaml
+
