@@ -23,5 +23,6 @@ jobs:
         run: | 
           aws eks update-kubeconfig --region ap-south-1 --name demo-eks-dev
           kubectl config current-context
-          kubectl get nodes
+          aws sts get-caller-identity
+          aws eks describe-cluster --name demo-eks-dev --region ap-south-1
 
