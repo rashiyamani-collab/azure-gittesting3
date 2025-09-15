@@ -7,22 +7,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write  # This is crucial for OIDC authentication
+      id-token: write # Required for OIDC
       contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials with OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::074002960123:role/rashiyamani-collab-azure-gittesting3-oidc-role
           aws-region: ap-south-1
 
-      - name: Update Kubeconfig
+      - name: Update Kubeconfig for EKS
         run: |
           aws eks update-kubeconfig --name demo-eks-dev --region ap-south-1
 
-      - name: Test Kubectl
+      - name: Get all pods
         run: |
           kubectl get pods --all-namespaces
