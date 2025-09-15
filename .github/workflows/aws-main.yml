@@ -34,5 +34,4 @@ jobs:
         run: aws eks update-kubeconfig --name demo-eks-dev --region ap-south-1
 
       - name: Deploy to EKS
-        run: kubectl apply -f k8s/app-deployment.yaml
-
+        run: kubectl apply -f k8s/
