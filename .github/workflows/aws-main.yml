@@ -25,4 +25,6 @@ jobs:
           kubectl config current-context
           aws sts get-caller-identity
           aws eks describe-cluster --name demo-eks-dev --region ap-south-1
+          aws sts get-caller-identity
+          kubectl --help
 
